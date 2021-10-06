@@ -5,10 +5,10 @@
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav class="w-100 justify-content-evenly">
-        <b-nav-item to="/" class="router-link-exact-active">New issue</b-nav-item>
-        <b-nav-item to="/issues/open" class="router-link-exact-active">Open issues</b-nav-item>
-        <b-nav-item to="/issues/done" class="router-link-exact-active">Done issues</b-nav-item>
-        <b-nav-item to="/issues/trashed" class="router-link-exact-active">Trashed issues</b-nav-item>
+        <b-nav-item to="/" :active="$route.path==='/'">New issue</b-nav-item>
+        <b-nav-item to="/issues/open" :active="$route.path==='/issues/open'">Open issues</b-nav-item>
+        <b-nav-item to="/issues/done" :active="$route.path==='/issues/done'">Done issues</b-nav-item>
+        <b-nav-item to="/issues/trashed" :active="$route.path==='/issues/trashed'">Trashed issues</b-nav-item>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
