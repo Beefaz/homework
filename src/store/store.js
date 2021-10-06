@@ -37,7 +37,7 @@ export default new Vuex.Store({
     ISSUE_NEW: (state, issue) => {
       issue.id = state.allIssues.length;
       issue.status = 'open';
-      state.allIssues.push(issue);
+      state.allIssues.unshift(issue);
     },
     ISSUE_DELETE: (state, issue) => {
       let item = state.allIssues.findIndex(item => item.id === issue.id);
