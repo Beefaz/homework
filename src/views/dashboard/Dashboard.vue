@@ -1,12 +1,11 @@
 <template>
   <b-container>
     <b-row
-        class="row"
         :key="reload"
     >
       <!-- create new -->
       <template
-          v-if="statusView === 'new'"
+          v-if="$route.meta.statusView === 'new'"
       >
         <b-col cols="4">
           <base-card>
@@ -19,7 +18,7 @@
             <template v-slot:buttons>
               <!-- create btn-->
               <b-button type="button"
-                        v-if="statusView === 'new'"
+                        v-if="$route.meta.statusView === 'new'"
                         variant="success"
                         @click="addNewIssue"
               >
@@ -35,7 +34,7 @@
              v-for="(issue, index) in allIssues"
              :key="index"
       >
-        <base-card v-if="issue.status === statusView">
+        <base-card v-if="issue.status === $route.meta.statusView">
           <template v-slot:text>
             <input
                 v-if="currentIssue.id === issue.id"
@@ -69,6 +68,14 @@
               Mark as done
             </b-button>
 
+            <!-- mark as open btn-->
+            <b-button
+                v-if="issue.status === 'done'"
+                variant="warning"
+                @click="markAsOpenIssue(issue)"
+            >
+              Mark as open
+            </b-button>
 
             <!-- delete btn-->
             <b-button
@@ -101,7 +108,6 @@ import {mapState, mapMutations} from "vuex";
 export default {
   name: 'dashboard',
   components: {BaseCard},
-  props: ['statusView'],
   data() {
     return {
       newIssue: {
@@ -116,7 +122,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentRoute', 'currentIssue', 'allIssues', 'trashedIssues']),
+    ...mapState(['currentIssue', 'allIssues', 'trashedIssues']),
   },
   methods: {
     //local component methods
@@ -129,12 +135,17 @@ export default {
       'ISSUE_NEW',
       'ISSUE_DELETE',
       'ISSUE_EDIT',
+      'ISSUE_MARK_AS_OPEN',
       'ISSUE_MARK_AS_DONE',
       'ISSUE_RESTORE',
       'ISSUE_SET_CURRENT'
     ]),
     addNewIssue() {
       this.ISSUE_NEW(this.newIssue);
+    },
+    markAsOpenIssue(issue) {
+      this.ISSUE_MARK_AS_OPEN(issue);
+      this.reload++;
     },
     markAsDoneIssue(issue) {
       this.ISSUE_MARK_AS_DONE(issue);
