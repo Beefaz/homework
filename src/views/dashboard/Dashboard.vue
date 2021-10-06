@@ -17,8 +17,9 @@
           <b-button type="button"
                     variant="success"
                     @click="addNewIssue(); makeToast('Created at: ', 'new', 'open')"
+                    v-b-tooltip.hover title="Create new issue"
           >
-            Create new issue
+            <b-icon icon="plus"></b-icon>
           </b-button>
         </b-card-footer>
       </b-card>
