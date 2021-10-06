@@ -68,6 +68,10 @@ export default {
     border-radius: 25px;
     padding: 3px;
     margin: 2px;
+    a {
+      flex-grow: 1;
+      text-align: center;
+    }
   }
 }
 </style>
