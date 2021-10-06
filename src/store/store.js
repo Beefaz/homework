@@ -5,33 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    currentIssue: {},
-    allIssues: [
-      {
-        id: 0,
-        text: 'turiu paruosti namu darbus dfgdfhf sh dsh sdfh dgh dsh sdfh dfh sdfh sdfh sdfh dsfh dsh dfh dfh sdfhdsf hdfh sh dfhsdf dfh sdfh sdfsh sdh',
-        status: 'trashed',  //open,done,trashed
-        previousStatus: 'open'
-      },
-      {
-        id: 1,
-        text: 'turiu paruosti namu darbus2',
-        status: 'done',  //open,done,trashed
-        previousStatus: null
-      },
-      {
-        id: 2,
-        text: 'turiu paruosti namu darbus3',
-        status: 'open',  //open,done,trashed
-        previousStatus: null
-      },
-      {
-        id: 3,
-        text: 'turiu paruosti namu darbus4',
-        status: 'open',  //open,done,trashed
-        previousStatus: null
-      },
-    ]
+    allIssues: []
   },
   mutations: {
     ISSUE_NEW: (state, issue) => {
@@ -55,13 +29,9 @@ export default new Vuex.Store({
       let item = state.allIssues.findIndex(item => item.id === issue.id);
       state.allIssues[item] = {...issue, status: state.allIssues[item].previousStatus};
     },
-    ISSUE_SET_CURRENT: (state, issue) => {
-      state.currentIssue = {...issue};
-    },
     ISSUE_SAVE_CURRENT: (state, issue) => {
       let item = state.allIssues.findIndex(item => item.id === issue.id);
-      state.allIssues[item] = {...state.currentIssue};
-      state.currentIssue = {};
+      state.allIssues[item] = {...issue};
     },
 
     // eslint-disable-next-line no-unused-vars
