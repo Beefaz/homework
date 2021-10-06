@@ -2,6 +2,8 @@
   <b-container
       class="w-auto"
       :key="reload">
+
+    <!-- create card -->
     <b-row v-if="$route.meta.statusView === 'new'" class="mt-1">
       <b-card class="custom-issue-card">
         <b-card-text>
@@ -14,7 +16,7 @@
         <b-card-footer>
           <b-button type="button"
                     variant="success"
-                    @click="addNewIssue"
+                    @click="addNewIssue(); makeToast('Created at: ', 'new', 'open')"
           >
             Create new issue
           </b-button>
@@ -28,29 +30,24 @@
            :key="index"
     >
       <b-card v-if="issue.status === $route.meta.statusView" class="custom-issue-card">
-        <b-card-text>
 
+        <b-card-text>
+          <!-- span overlay -->
           <input
-              v-if="currentIssue.id === issue.id"
+              :ref="`input-text${issue.id}`"
+              type="text"
               :value="`${issue.text}`"
-              :v-model="editableIssue.text"
-              v-on:keyup.enter="saveCurrentIssue()"
+              :v-model="issueCurrentlyEdited.text"
+              @input="saveCurrentIssue(issue)"
           />
-          <span
-              v-else
-              @click="setCurrentIssue(issue)"
-          >
-          {{ issue.text }}
-        </span>
         </b-card-text>
 
         <b-card-footer>
-
           <!-- mark as done btn-->
           <b-button
               v-if="issue.status === 'open'"
               variant="primary"
-              @click="markAsDoneIssue(issue)"
+              @click="markAsDoneIssue(issue); makeToast('Moved to: ', issue.status,'done')"
               v-b-tooltip.hover title="Mark as done"
           >
             <b-icon icon="check2"></b-icon>
@@ -60,7 +57,7 @@
           <b-button
               v-if="issue.status === 'done'"
               variant="warning"
-              @click="markAsOpenIssue(issue)"
+              @click="markAsOpenIssue(issue); makeToast('Moved to: ', issue.status, 'open')"
               v-b-tooltip.hover title="Mark as open"
           >
             <b-icon icon="check2"></b-icon>
@@ -70,7 +67,7 @@
           <b-button
               v-if="issue.status === 'open' || issue.status === 'done'"
               variant="danger"
-              @click="deleteIssue(issue)"
+              @click="deleteIssue(issue); makeToast('Deleted to: ', issue.status, 'trashed')"
               v-b-tooltip.hover title="Move to trash"
           >
             <b-icon icon="trash"></b-icon>
@@ -79,7 +76,7 @@
           <!-- restore btn-->
           <b-button
               v-if="issue.status === 'trashed'"
-              @click="restoreIssue(issue)"
+              @click="restoreIssue(issue); makeToast('Restored to: ', issue.status, issue.previousStatus)"
               v-b-tooltip.hover title="Restore"
           >
             <b-icon icon="arrow90deg-left"></b-icon>
@@ -101,24 +98,40 @@ export default {
       newIssue: {
         text: null,
       },
-      editableIssue: {
-        id: null,
-        text: null,
-        status: null
+      issueCurrentlyEdited: {
+        text: null
       },
       reload: 0,
     }
   },
   computed: {
-    ...mapState(['currentIssue', 'allIssues']),
+    ...mapState(['allIssues']),
   },
   methods: {
     //local component methods
-    setEditableIssue(issue) {
-      this.editableIssue = {...this.editableIssue, ...issue}
+    makeToast(text = '', currentSection = 'default', target = 'default') {
+      if (!this.newIssue.text && currentSection === 'new') return;
+
+      const h = this.$createElement;
+      const vNodesTitle = h(
+          'div',
+          {class: 'd-flex flex-grow-1 justify-content-center'},
+          [
+            h('strong', {class: 'mr-2'}, text),
+            h('span', {class: `d-flex align-items-center badge badge-${this.$sectionColors[target]}`}, target)
+          ]
+      )
+      this.$bvToast.toast(text, {
+        title: vNodesTitle,
+        toaster: 'b-toaster-bottom-right',
+        variant: this.$sectionColors[currentSection],
+        solid: true,
+        bodyClass: 'd-none',
+        autoHideDelay: 2500,
+      })
     },
 
-    //store methond
+    //store methods
     ...mapMutations([
       'ISSUE_NEW',
       'ISSUE_DELETE',
@@ -127,10 +140,11 @@ export default {
       'ISSUE_RESTORE',
       'ISSUE_SET_CURRENT',
       'ISSUE_SAVE_CURRENT',
-      'GET_COOKIE_DATA'
     ]),
     addNewIssue() {
+      if(!this.newIssue.text) return;
       this.ISSUE_NEW({...this.newIssue});
+      this.reload++;
     },
     markAsOpenIssue(issue) {
       this.ISSUE_MARK_AS_OPEN(issue);
@@ -144,17 +158,14 @@ export default {
       this.ISSUE_DELETE(issue);
       this.reload++;
     },
-    saveCurrentIssue() {
-      this.ISSUE_SAVE_CURRENT(this.editableIssue);
-      this.reload++;
+    saveCurrentIssue(issue) {
+      issue.text = this.$refs[`input-text${issue.id}`][0].value;
+      this.ISSUE_SAVE_CURRENT(issue);
+      this.$store.commit('SET_COOKIE_DATA');
     },
     restoreIssue(issue) {
       this.ISSUE_RESTORE(issue);
       this.reload++;
-    },
-    setCurrentIssue(issue) {
-      this.ISSUE_SET_CURRENT(issue);
-      this.editableIssue = {...this.currentIssue};
     },
   },
   beforeCreate() {
@@ -169,6 +180,7 @@ export default {
 <style lang="scss" scoped>
 .custom-issue-card {
   width: 100%;
+  box-shadow: 0px 0px 3px 0px black;
 
   .card-body {
     display: flex;
@@ -194,6 +206,13 @@ export default {
   .card-footer {
     display: flex;
     gap: 5px;
+    button {
+      border: inset;
+      border-color: rgba(255,255,255,0.5);
+      box-sizing: border-box;
+      box-shadow: 0px 0px 20px 0px white;
+      border-radius: 25px;
+    }
   }
 }
 </style>
