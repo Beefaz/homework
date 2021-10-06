@@ -1,42 +1,37 @@
 <template>
-  <b-container>
-    <b-row
-        :key="reload"
-    >
-      <!-- create new -->
-      <template
-          v-if="$route.meta.statusView === 'new'"
-      >
-        <b-col cols="4">
-          <base-card>
-            <template v-slot:text>
-              <input
-                  type="text"
-                  v-model="newIssue.text"
-              >
-            </template>
-            <template v-slot:buttons>
-              <!-- create btn-->
-              <b-button type="button"
-                        v-if="$route.meta.statusView === 'new'"
-                        variant="success"
-                        @click="addNewIssue"
-              >
-                Create new issue
-              </b-button>
-            </template>
-          </base-card>
-        </b-col>
-      </template>
+  <b-container
+      class="w-auto"
+      :key="reload">
+    <b-row v-if="$route.meta.statusView === 'new'" class="mt-1">
+      <b-card class="custom-issue-card">
+        <b-card-text>
+          <input
+              type="text"
+              v-model="newIssue.text"
+          >
+        </b-card-text>
+        <!-- create btn-->
+        <b-card-footer>
+          <b-button type="button"
+                    variant="success"
+                    @click="addNewIssue"
+          >
+            Create new issue
+          </b-button>
+        </b-card-footer>
+      </b-card>
+    </b-row>
 
-      <!-- other cards-->
-      <b-col cols="4"
-             v-for="(issue, index) in allIssues"
-             :key="index"
-      >
-        <base-card v-if="issue.status === $route.meta.statusView">
-          <template v-slot:text>
+    <!-- other cards-->
+    <b-row class="mt-1"
+        v-for="(issue, index) in allIssues.filter(item => item.status === $route.meta.statusView)"
+        :key="index"
+    >
+        <b-card v-if="issue.status === $route.meta.statusView" class="custom-issue-card">
+          <b-card-text>
+
             <input
+                ref="input"
                 v-if="currentIssue.id === issue.id"
                 :value="`${issue.text}`"
                 :v-model="editableIssue.text"
@@ -45,11 +40,11 @@
                 v-else
                 @click="setCurrentIssue(issue)"
             >
-                    {{ issue.text }}
-                  </span>
-          </template>
+          {{ issue.text }}
+        </span>
+          </b-card-text>
 
-          <template v-slot:buttons>
+          <b-card-footer>
             <!-- save btn-->
             <b-button
                 v-if="editableIssue.text"
@@ -64,8 +59,9 @@
                 v-else-if="issue.status === 'open'"
                 variant="primary"
                 @click="markAsDoneIssue(issue)"
+                v-b-tooltip.hover title="Mark as done"
             >
-              Mark as done
+              <b-icon icon="check2"></b-icon>
             </b-button>
 
             <!-- mark as open btn-->
@@ -73,8 +69,9 @@
                 v-if="issue.status === 'done'"
                 variant="warning"
                 @click="markAsOpenIssue(issue)"
+                v-b-tooltip.hover title="Mark as open"
             >
-              Mark as open
+              <b-icon icon="check2"></b-icon>
             </b-button>
 
             <!-- delete btn-->
@@ -82,32 +79,31 @@
                 v-if="issue.status === 'open' || issue.status === 'done'"
                 variant="danger"
                 @click="deleteIssue(issue)"
+                v-b-tooltip.hover title="Move to trash"
             >
-              Delete issue
+              <b-icon icon="trash"></b-icon>
             </b-button>
 
             <!-- restore btn-->
             <b-button
                 v-if="issue.status === 'trashed'"
                 @click="restoreIssue(issue)"
+                v-b-tooltip.hover title="Restore"
             >
-              Restore issue
+              <b-icon icon="arrow90deg-left"></b-icon>
             </b-button>
-          </template>
-        </base-card>
-      </b-col>
+          </b-card-footer>
+        </b-card>
     </b-row>
   </b-container>
 </template>
 
 <script>
 
-import BaseCard from "@/components/BaseCard";
 import {mapState, mapMutations} from "vuex";
 
 export default {
   name: 'dashboard',
-  components: {BaseCard},
   data() {
     return {
       newIssue: {
@@ -122,7 +118,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentIssue', 'allIssues', 'trashedIssues']),
+    ...mapState(['currentIssue', 'allIssues']),
   },
   methods: {
     //local component methods
@@ -141,7 +137,7 @@ export default {
       'ISSUE_SET_CURRENT'
     ]),
     addNewIssue() {
-      this.ISSUE_NEW(this.newIssue);
+      this.ISSUE_NEW({...this.newIssue});
     },
     markAsOpenIssue(issue) {
       this.ISSUE_MARK_AS_OPEN(issue);
@@ -150,6 +146,7 @@ export default {
     markAsDoneIssue(issue) {
       this.ISSUE_MARK_AS_DONE(issue);
       this.reload++;
+      console.log(this.$store.state);
     },
     deleteIssue(issue) {
       this.ISSUE_DELETE(issue);
@@ -169,5 +166,33 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+.custom-issue-card {
+  width: 100%;
+
+  .card-body {
+    display: flex;
+
+    .card-text {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      margin-bottom: 0;
+      background-color: rgba(0, 0, 0, 0.03);
+      border-top: 1px solid rgba(0, 0, 0, 0.125);
+      margin-right: 5px;
+      input {
+        width: 100%;
+        height: 100%;
+        background:transparent;
+        border:unset;
+      }
+    }
+  }
+
+  .card-footer {
+    display: flex;
+    gap: 5px;
+  }
+}
 </style>
