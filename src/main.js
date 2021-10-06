@@ -10,6 +10,13 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
+Vue.prototype.$sectionColors = {
+    default: 'default',
+    new: 'success',
+    open: 'warning',
+    done: 'primary',
+    trashed: 'danger'
+};
 
 new Vue({
   router,
