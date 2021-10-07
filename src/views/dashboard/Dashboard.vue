@@ -196,10 +196,14 @@ export default {
       margin-right: 5px;
 
       input {
+        cursor: pointer;
         width: 100%;
         height: 100%;
         background: transparent;
         border: unset;
+        &:focus{
+          cursor: inherit;
+        }
       }
     }
   }
