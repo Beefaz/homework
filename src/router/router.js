@@ -15,6 +15,7 @@ const routes = [
     },
     name: 'new-issues',
     meta: {
+      label: 'New issues',
       statusView: 'new'
     }
   },
@@ -26,6 +27,7 @@ const routes = [
     },
     name: 'open-issues',
     meta: {
+      label: 'Open issues',
       statusView: 'open'
     }
   },
@@ -37,6 +39,7 @@ const routes = [
     },
     name: 'done-issues',
     meta: {
+      label: 'Done issues',
       statusView: 'done'
     }
   },
@@ -48,6 +51,7 @@ const routes = [
     },
     name: 'trashed-issues',
     meta: {
+      label: 'Trashed issues',
       statusView: 'trashed'
     }
   }
