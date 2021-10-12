@@ -16,7 +16,7 @@
         <b-card-footer>
           <b-button type="button"
                     variant="success"
-                    @click="addNewIssue(); makeToast('Created at: ', 'new', 'open')"
+                    @click="addNewIssue()"
                     v-b-tooltip.hover title="Create new issue"
           >
             <b-icon icon="plus"></b-icon>
@@ -48,7 +48,7 @@
           <b-button
               v-if="issue.status === 'open'"
               variant="primary"
-              @click="markAsDoneIssue(issue); makeToast('Moved to: ', issue.status,'done')"
+              @click="markAsDoneIssue(issue); "
               v-b-tooltip.hover title="Mark as done"
           >
             <b-icon icon="check2"></b-icon>
@@ -145,7 +145,8 @@ export default {
     addNewIssue() {
       if(!this.newIssue.text) return;
       this.ISSUE_NEW({...this.newIssue});
-      this.reload++;
+      this.makeToast('Created at: ', 'new', 'open');
+      this.newIssue.text = null;
     },
     markAsOpenIssue(issue) {
       this.ISSUE_MARK_AS_OPEN(issue);

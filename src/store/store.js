@@ -3,6 +3,8 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex)
 
+const getIssueByIndex = (state, issue) => state.allIssues.findIndex(item => item.id === issue.id);
+
 export default new Vuex.Store({
   state: {
     allIssues: []
@@ -14,24 +16,19 @@ export default new Vuex.Store({
       state.allIssues.unshift(issue);
     },
     ISSUE_DELETE: (state, issue) => {
-      let item = state.allIssues.findIndex(item => item.id === issue.id);
-      state.allIssues[item] = {...issue, status: 'trashed', previousStatus: issue.status};
+      state.allIssues[getIssueByIndex(state, issue)] = {...issue, status: 'trashed', previousStatus: issue.status};
     },
     ISSUE_MARK_AS_OPEN: (state, issue) => {
-      let item = state.allIssues.findIndex(item => item.id === issue.id);
-      state.allIssues[item] = {...issue, status: 'open'};
+      state.allIssues[getIssueByIndex(state, issue)] = {...issue, status: 'open'};
     },
     ISSUE_MARK_AS_DONE: (state, issue) => {
-      let item = state.allIssues.findIndex(item => item.id === issue.id);
-      state.allIssues[item] = {...issue, status: 'done'};
+      state.allIssues[getIssueByIndex(state, issue)] = {...issue, status: 'done'};
     },
     ISSUE_RESTORE: (state, issue) => {
-      let item = state.allIssues.findIndex(item => item.id === issue.id);
-      state.allIssues[item] = {...issue, status: state.allIssues[item].previousStatus};
+      state.allIssues[getIssueByIndex(state, issue)] = {...issue, status: state.allIssues[getIssueByIndex(state, issue)].previousStatus};
     },
     ISSUE_SAVE_CURRENT: (state, issue) => {
-      let item = state.allIssues.findIndex(item => item.id === issue.id);
-      state.allIssues[item] = {...issue};
+      state.allIssues[getIssueByIndex(state, issue)] = {...issue};
     },
 
     // eslint-disable-next-line no-unused-vars
