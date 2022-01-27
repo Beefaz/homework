@@ -13,45 +13,45 @@ const routes = [
       navigation: NavBar,
       content: Dashboard,
     },
-    name: 'new-issues',
+    name: 'new-tasks',
     meta: {
-      label: 'New issues',
+      label: 'New tasks',
       statusView: 'new'
     }
   },
   {
-    path: '/issues/open',
+    path: '/tasks/open',
     components: {
       navigation: NavBar,
       content: Dashboard,
     },
-    name: 'open-issues',
+    name: 'open-tasks',
     meta: {
-      label: 'Open issues',
+      label: 'Open tasks',
       statusView: 'open'
     }
   },
   {
-    path: '/issues/done',
+    path: '/tasks/done',
     components: {
       navigation: NavBar,
       content: Dashboard,
     },
-    name: 'done-issues',
+    name: 'done-tasks',
     meta: {
-      label: 'Done issues',
+      label: 'Done tasks',
       statusView: 'done'
     }
   },
   {
-    path: '/issues/trashed',
+    path: '/tasks/trashed',
     components: {
       navigation: NavBar,
       content: Dashboard,
     },
-    name: 'trashed-issues',
+    name: 'trashed-tasks',
     meta: {
-      label: 'Trashed issues',
+      label: 'Trashed tasks',
       statusView: 'trashed'
     }
   }

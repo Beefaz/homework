@@ -3,47 +3,47 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex)
 
-const getIssueByIndex = (state, issue) => state.allIssues.findIndex(item => item.id === issue.id);
+const getTaskByIndex = (state, task) => state.allTasks.findIndex(item => item.id === task.id);
 
 export default new Vuex.Store({
   state: {
-    allIssues: []
+    allTasks: []
   },
   mutations: {
-    ISSUE_NEW: (state, issue) => {
-      issue.id = state.allIssues.length;
-      issue.status = 'open';
-      state.allIssues.unshift(issue);
+    TASK_NEW: (state, task) => {
+      task.id = state.allTasks.length;
+      task.status = 'open';
+      state.allTasks.unshift(task);
     },
-    ISSUE_DELETE: (state, issue) => {
-      state.allIssues[getIssueByIndex(state, issue)] = {...issue, status: 'trashed', previousStatus: issue.status};
+    TASK_DELETE: (state, task) => {
+      state.allTasks[getTaskByIndex(state, task)] = {...task, status: 'trashed', previousStatus: task.status};
     },
-    ISSUE_MARK_AS_OPEN: (state, issue) => {
-      state.allIssues[getIssueByIndex(state, issue)] = {...issue, status: 'open'};
+    TASK_MARK_AS_OPEN: (state, task) => {
+      state.allTasks[getTaskByIndex(state, task)] = {...task, status: 'open'};
     },
-    ISSUE_MARK_AS_DONE: (state, issue) => {
-      state.allIssues[getIssueByIndex(state, issue)] = {...issue, status: 'done'};
+    TASK_MARK_AS_DONE: (state, task) => {
+      state.allTasks[getTaskByIndex(state, task)] = {...task, status: 'done'};
     },
-    ISSUE_RESTORE: (state, issue) => {
-      state.allIssues[getIssueByIndex(state, issue)] = {...issue, status: state.allIssues[getIssueByIndex(state, issue)].previousStatus};
+    TASK_RESTORE: (state, task) => {
+      state.allTasks[getTaskByIndex(state, task)] = {...task, status: state.allTasks[getTaskByIndex(state, task)].previousStatus};
     },
-    ISSUE_SAVE_CURRENT: (state, issue) => {
-      state.allIssues[getIssueByIndex(state, issue)] = {...issue};
+    TASK_SAVE_CURRENT: (state, task) => {
+      state.allTasks[getTaskByIndex(state, task)] = {...task};
     },
 
     // eslint-disable-next-line no-unused-vars
     GET_COOKIE_DATA:(state) => {
-      if (localStorage.getItem('issues-storage')) state.allIssues = JSON.parse(localStorage.getItem('issues-storage')).allIssues;
+      if (localStorage.getItem('tasks-storage')) state.allTasks = JSON.parse(localStorage.getItem('tasks-storage')).allTasks;
     },
     SET_COOKIE_DATA:(state) => {
-      if (localStorage.getItem('issues-storage')) localStorage.removeItem('issues-storage');
-      localStorage.setItem('issues-storage', JSON.stringify(state));
+      if (localStorage.getItem('tasks-storage')) localStorage.removeItem('tasks-storage');
+      localStorage.setItem('tasks-storage', JSON.stringify(state));
     }
   },
   actions: {},
   modules: {},
   getters: {
-    getAllIssues: state => state.allIssues,
-    getCurrentIssue: state => state.currentIssue,
+    getAllTasks: state => state.allTasks,
+    getCurrentTask: state => state.currentTask,
   },
 })

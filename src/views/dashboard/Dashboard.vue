@@ -1,117 +1,169 @@
 <template>
-  <b-container
-      class="w-auto"
-      :key="reload">
-
+  <div
+      class="custom-scroll overflow-auto my-1 px-1 px-sm-5"
+  >
     <!-- create card -->
-    <b-row v-if="$route.meta.statusView === 'new'" class="mt-1">
-      <b-card class="custom-issue-card">
-        <b-card-text>
-          <input
-              type="text"
-              v-model="newIssue.text"
-          >
+    <b-row
+        v-if="$route.meta.statusView === 'new'"
+        class="pb-3 no-gutters"
+    >
+      <b-card class="custom-task-card">
+        <b-card-text
+            @input="modelNewInput($event)"
+            contenteditable
+        >
         </b-card-text>
         <!-- create btn-->
         <b-card-footer>
-          <b-button type="button"
-                    variant="success"
-                    @click="addNewIssue()"
-                    v-b-tooltip.hover title="Create new issue"
+          <b-button
+              type="button"
+              variant="success"
+              @click="addNewTask()"
+              v-b-tooltip.hover title="Create new task"
           >
-            <b-icon icon="plus"></b-icon>
+            <b-icon icon="plus"/>
           </b-button>
         </b-card-footer>
       </b-card>
     </b-row>
 
     <!-- other cards-->
-    <b-row class="mt-1"
-           v-for="(issue, index) in allIssues.filter(item => item.status === $route.meta.statusView)"
-           :key="index"
+    <b-row class="pb-3 no-gutters"
+           v-for="(task, index) in allTasks.filter(item => item.status === $route.meta.statusView)"
+           :key="`${task.id}-${index}`"
     >
-      <b-card v-if="issue.status === $route.meta.statusView" class="custom-issue-card">
+      <b-card v-if="task.status === $route.meta.statusView" class="custom-task-card">
 
-        <b-card-text>
-          <!-- span overlay -->
-          <input
-              :ref="`input-text${issue.id}`"
-              type="text"
-              :value="`${issue.text}`"
-              :v-model="issueCurrentlyEdited.text"
-              @input="saveCurrentIssue(issue)"
-          />
+        <b-card-text
+            :ref="`input-text${task.id}`"
+            @input="saveCurrentTask(task)"
+            contenteditable
+        >
+          {{ task.text }}
         </b-card-text>
 
         <b-card-footer>
           <!-- mark as done btn-->
           <b-button
-              v-if="issue.status === 'open'"
+              v-if="task.status === 'open'"
               variant="primary"
-              @click="markAsDoneIssue(issue); makeToast('Moved to: ', issue.status, 'done')"
+              @click="markAsDoneTask(task); makeToast('Moved to: ', task.status, 'done')"
               v-b-tooltip.hover title="Mark as done"
           >
-            <b-icon icon="check2"></b-icon>
+            <b-icon icon="check2"/>
           </b-button>
 
           <!-- mark as open btn-->
           <b-button
-              v-if="issue.status === 'done'"
+              v-if="task.status === 'done'"
               variant="warning"
-              @click="markAsOpenIssue(issue); makeToast('Moved to: ', issue.status, 'open')"
+              @click="markAsOpenTask(task); makeToast('Moved to: ', task.status, 'open')"
               v-b-tooltip.hover title="Mark as open"
           >
-            <b-icon icon="check2"></b-icon>
+            <b-icon icon="check2"/>
           </b-button>
 
           <!-- delete btn-->
           <b-button
-              v-if="issue.status === 'open' || issue.status === 'done'"
+              v-if="task.status === 'open' || task.status === 'done'"
               variant="danger"
-              @click="deleteIssue(issue); makeToast('Deleted to: ', issue.status, 'trashed')"
+              @click="deleteTask(task); makeToast('Deleted to: ', task.status, 'trashed')"
               v-b-tooltip.hover title="Move to trash"
           >
-            <b-icon icon="trash"></b-icon>
+            <b-icon icon="trash"/>
           </b-button>
 
           <!-- restore btn-->
           <b-button
-              v-if="issue.status === 'trashed'"
-              @click="restoreIssue(issue); makeToast('Restored to: ', issue.status, issue.previousStatus)"
+              v-if="task.status === 'trashed'"
+              @click="restoreTask(task); makeToast('Restored to: ', task.status, task.previousStatus)"
               v-b-tooltip.hover title="Restore"
           >
-            <b-icon icon="arrow90deg-left"></b-icon>
+            <b-icon icon="arrow90deg-left"/>
           </b-button>
         </b-card-footer>
       </b-card>
     </b-row>
-  </b-container>
+  </div>
 </template>
 
 <script>
-
 import {mapState, mapMutations} from "vuex";
 
 export default {
   name: 'dashboard',
   data() {
     return {
-      newIssue: {
+      reload: 0,
+      newTask: {
         text: null,
       },
-      issueCurrentlyEdited: {
-        text: null
-      },
-      reload: 0,
     }
   },
-  computed: {
-    ...mapState(['allIssues']),
+
+  beforeCreate() {
+    this.$store.commit('GET_COOKIE_DATA');
   },
+
+  updated() {
+    this.$store.commit('SET_COOKIE_DATA');
+  },
+
+  computed: {
+    ...mapState(['allTasks']),
+  },
+
   methods: {
-    //local component methods
+    //store methods
+    ...mapMutations([
+      'TASK_NEW',
+      'TASK_DELETE',
+      'TASK_MARK_AS_OPEN',
+      'TASK_MARK_AS_DONE',
+      'TASK_RESTORE',
+      'TASK_SET_CURRENT',
+      'TASK_SAVE_CURRENT',
+    ]),
+
+    modelNewInput(event) {
+      this.newTask.text = event.target.innerText;
+    },
+
+    addNewTask() {
+      if (!this.newTask.text || this.newTask.text === '') return;
+      this.TASK_NEW({...this.newTask});
+      this.makeToast('Created at: ', 'new', 'open');
+      this.newTask.text = null;
+    },
+
+    markAsOpenTask(task) {
+      this.TASK_MARK_AS_OPEN(task);
+      this.$forceUpdate();
+    },
+
+    markAsDoneTask(task) {
+      this.TASK_MARK_AS_DONE(task);
+      this.$forceUpdate();
+    },
+
+    deleteTask(task) {
+      this.TASK_DELETE(task);
+      this.$forceUpdate();
+    },
+
+    saveCurrentTask(task) {
+      task.text = this.$refs[`input-text${task.id}`][0].innerText;
+      this.TASK_SAVE_CURRENT(task);
+      this.$store.commit('SET_COOKIE_DATA');
+    },
+
+    restoreTask(task) {
+      this.TASK_RESTORE(task);
+      this.$forceUpdate();
+    },
+
     makeToast(text = '', currentSection = 'default', target = 'default') {
-      if (!this.newIssue.text && currentSection === 'new') return;
+      if (!this.newTask.text && currentSection === 'new') return;
 
       const h = this.$createElement;
       const vNodesTitle = h(
@@ -122,6 +174,7 @@ export default {
             h('span', {class: `d-flex align-items-center badge badge-${this.$sectionColors[target]}`}, target)
           ]
       )
+
       this.$bvToast.toast(text, {
         title: vNodesTitle,
         toaster: 'b-toaster-bottom-right',
@@ -131,58 +184,30 @@ export default {
         autoHideDelay: 2500,
       })
     },
-
-    //store methods
-    ...mapMutations([
-      'ISSUE_NEW',
-      'ISSUE_DELETE',
-      'ISSUE_MARK_AS_OPEN',
-      'ISSUE_MARK_AS_DONE',
-      'ISSUE_RESTORE',
-      'ISSUE_SET_CURRENT',
-      'ISSUE_SAVE_CURRENT',
-    ]),
-    addNewIssue() {
-      if(!this.newIssue.text) return;
-      this.ISSUE_NEW({...this.newIssue});
-      this.makeToast('Created at: ', 'new', 'open');
-      this.newIssue.text = null;
-    },
-    markAsOpenIssue(issue) {
-      this.ISSUE_MARK_AS_OPEN(issue);
-      this.reload++;
-    },
-    markAsDoneIssue(issue) {
-      this.ISSUE_MARK_AS_DONE(issue);
-      this.reload++;
-    },
-    deleteIssue(issue) {
-      this.ISSUE_DELETE(issue);
-      this.reload++;
-    },
-    saveCurrentIssue(issue) {
-      issue.text = this.$refs[`input-text${issue.id}`][0].value;
-      this.ISSUE_SAVE_CURRENT(issue);
-      this.$store.commit('SET_COOKIE_DATA');
-    },
-    restoreIssue(issue) {
-      this.ISSUE_RESTORE(issue);
-      this.reload++;
-    },
   },
-  beforeCreate() {
-    this.$store.commit('GET_COOKIE_DATA');
-  },
-  updated() {
-    this.$store.commit('SET_COOKIE_DATA');
-  }
 }
 </script>
 
 <style lang="scss" scoped>
-.custom-issue-card {
+.custom-scroll {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 10%);
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 50%);
+    border-radius: 5px;
+  }
+}
+
+.custom-task-card {
   width: 100%;
-  box-shadow: 0 0 3px 0 #000000;
+  box-shadow: -3px 8px 15px -10px #000000;
 
   .card-body {
     display: flex;
@@ -193,18 +218,14 @@ export default {
       flex-grow: 1;
       margin-bottom: 0;
       background-color: rgba(0, 0, 0, 0.03);
-      border-top: 1px solid rgba(0, 0, 0, 0.125);
       margin-right: 5px;
+      padding: 10px;
+      cursor: pointer;
+      overflow-wrap: anywhere;
+      box-shadow: -3px 8px 15px -10px inset #000000;
 
-      input {
-        cursor: pointer;
-        width: 100%;
-        height: 100%;
-        background: transparent;
-        border: unset;
-        &:focus{
-          cursor: inherit;
-        }
+      &:focus {
+        cursor: inherit;
       }
     }
   }
@@ -212,9 +233,15 @@ export default {
   .card-footer {
     display: flex;
     gap: 5px;
+    padding: 10px;
+    align-items: center;
+    box-shadow: -3px 8px 15px -10px inset #000000;
+
     button {
-      border: inset;
-      border-color: rgba(255,255,255,0.5);
+      width: 50px;
+      height: 50px;
+      border: outset;
+      border-color: rgba(255, 255, 255, 0.5);
       box-sizing: border-box;
       box-shadow: 0 0 20px 0 #FFFFFF;
       border-radius: 25px;
