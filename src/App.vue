@@ -66,11 +66,11 @@ export default {
 }
 
 .slide-left-enter {
-  transform: translateX(100%);
+  transform: translateX(130%);
 }
 
 .slide-left-enter-active {
-  transition: transform 0.5s ease-out;
+  transition: transform 1s;
 }
 
 .slide-left-enter-to,
@@ -79,22 +79,22 @@ export default {
 }
 
 .slide-left-leave-active {
-  transition: transform 0.5s ease-out;
+  transition: transform 1s;
   position: absolute;
   width: 100%;
 }
 
 .slide-left-leave-to {
-  transform: translateX(-100%);
+  transform: translateX(-130%);
 }
 
 
 .slide-right-enter {
-  transform: translateX(-100%);
+  transform: translateX(-130%);
 }
 
 .slide-right-enter-active {
-  transition: transform 0.5s ease-out;
+  transition: transform 1s;
 }
 
 .slide-right-enter-to,
@@ -103,12 +103,12 @@ export default {
 }
 
 .slide-right-leave-active {
-  transition: transform 0.5s ease-out;
+  transition: transform 1s;
   position: absolute;
   width: 100%;
 }
 
 .slide-right-leave-to {
-  transform: translateX(100%);
+  transform: translateX(130%);
 }
 </style>
