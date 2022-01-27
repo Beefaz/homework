@@ -1,7 +1,6 @@
-# Scoding homework
+### Version 2 (having fun):
+code: https://github.com/Beefaz/homework/tree/v2
 
-### Version 2:
-
-https://zen-pare-4d9304.netlify.app/
+page: https://zen-pare-4d9304.netlify.app/
 
 complete visual redesign +code fixes
