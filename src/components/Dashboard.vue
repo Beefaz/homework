@@ -1,89 +1,91 @@
 <template>
-  <div
-      class="custom-scroll overflow-auto my-1 px-1 px-sm-5"
-  >
+  <div>
     <!-- create card -->
-    <b-row
+    <BRow
         v-if="$route.meta.statusView === 'new'"
         class="pb-3 no-gutters"
     >
-      <b-card class="custom-task-card">
-        <b-card-text
+      <BCard class="custom-task-card">
+        <BCardText
+            ref="new-task-text"
             @input="modelNewInput($event)"
             contenteditable
-        >
-        </b-card-text>
+        />
         <!-- create btn-->
-        <b-card-footer>
-          <b-button
+        <BCardFooter>
+          <BButton
               type="button"
               variant="success"
               @click="addNewTask()"
               v-b-tooltip.hover title="Create new task"
           >
-            <b-icon icon="plus"/>
-          </b-button>
-        </b-card-footer>
-      </b-card>
-    </b-row>
+            <BIcon icon="plus"/>
+          </BButton>
+        </BCardFooter>
+      </BCard>
+    </BRow>
 
     <!-- other cards-->
-    <b-row class="pb-3 no-gutters"
-           v-for="(task, index) in allTasks.filter(item => item.status === $route.meta.statusView)"
-           :key="`${task.id}-${index}`"
+    <BRow
+        class="pb-3 no-gutters"
+        v-for="(task, index) in allTasks.filter(item => item.status === $route.meta.statusView)"
+        :key="`${task.status}-${task.id}-${index}`"
     >
-      <b-card v-if="task.status === $route.meta.statusView" class="custom-task-card">
+      <BCard
+          v-if="task.status === $route.meta.statusView"
+          class="custom-task-card"
+      >
 
-        <b-card-text
+        <BCardText
             :ref="`input-text${task.id}`"
             @input="saveCurrentTask(task)"
             contenteditable
         >
           {{ task.text }}
-        </b-card-text>
+        </BCardText>
 
-        <b-card-footer>
+        <BCardFooter>
           <!-- mark as done btn-->
-          <b-button
+          <BButton
               v-if="task.status === 'open'"
               variant="primary"
-              @click="markAsDoneTask(task); makeToast('Moved to: ', task.status, 'done')"
+              @click="markAsDoneTask(task)"
               v-b-tooltip.hover title="Mark as done"
           >
             <b-icon icon="check2"/>
-          </b-button>
+          </BButton>
 
           <!-- mark as open btn-->
-          <b-button
+          <BButton
               v-if="task.status === 'done'"
               variant="warning"
-              @click="markAsOpenTask(task); makeToast('Moved to: ', task.status, 'open')"
+              @click="markAsOpenTask(task)"
               v-b-tooltip.hover title="Mark as open"
           >
-            <b-icon icon="check2"/>
-          </b-button>
+            <BIcon icon="check2"/>
+          </BButton>
 
           <!-- delete btn-->
-          <b-button
+          <BButton
               v-if="task.status === 'open' || task.status === 'done'"
               variant="danger"
-              @click="deleteTask(task); makeToast('Deleted to: ', task.status, 'trashed')"
+              @click="deleteTask(task)"
               v-b-tooltip.hover title="Move to trash"
           >
-            <b-icon icon="trash"/>
-          </b-button>
+            <BIcon icon="trash"/>
+          </BButton>
 
           <!-- restore btn-->
-          <b-button
+          <BButton
               v-if="task.status === 'trashed'"
-              @click="restoreTask(task); makeToast('Restored to: ', task.status, task.previousStatus)"
+              @click="restoreTask(task)"
               v-b-tooltip.hover title="Restore"
           >
-            <b-icon icon="arrow90deg-left"/>
-          </b-button>
-        </b-card-footer>
-      </b-card>
-    </b-row>
+            <BIcon icon="arrow90deg-left"/>
+          </BButton>
+        </BCardFooter>
+      </BCard>
+    </BRow>
   </div>
 </template>
 
@@ -91,12 +93,12 @@
 import {mapState, mapMutations} from "vuex";
 
 export default {
-  name: 'dashboard',
+  name: 'Dashboard',
   data() {
     return {
       reload: 0,
       newTask: {
-        text: null,
+        text: '',
       },
     }
   },
@@ -114,7 +116,6 @@ export default {
   },
 
   methods: {
-    //store methods
     ...mapMutations([
       'TASK_NEW',
       'TASK_DELETE',
@@ -133,21 +134,26 @@ export default {
       if (!this.newTask.text || this.newTask.text === '') return;
       this.TASK_NEW({...this.newTask});
       this.makeToast('Created at: ', 'new', 'open');
-      this.newTask.text = null;
+      this.newTask.text = '';
+      this.$refs["new-task-text"].innerText = '';
+      this.$forceUpdate();
     },
 
     markAsOpenTask(task) {
       this.TASK_MARK_AS_OPEN(task);
+      this.makeToast('Moved to: ', task.status, 'open');
       this.$forceUpdate();
     },
 
     markAsDoneTask(task) {
       this.TASK_MARK_AS_DONE(task);
+      this.makeToast('Moved to: ', task.status, 'done');
       this.$forceUpdate();
     },
 
     deleteTask(task) {
       this.TASK_DELETE(task);
+      this.makeToast('Deleted to: ', task.status, 'trashed');
       this.$forceUpdate();
     },
 
@@ -159,6 +165,7 @@ export default {
 
     restoreTask(task) {
       this.TASK_RESTORE(task);
+      this.makeToast('Restored to: ', task.status, task.previousStatus);
       this.$forceUpdate();
     },
 
@@ -171,14 +178,14 @@ export default {
           {class: 'd-flex flex-grow-1 justify-content-center'},
           [
             h('strong', {class: 'mr-2'}, text),
-            h('span', {class: `d-flex align-items-center badge badge-${this.$sectionColors[target]}`}, target)
+            h('span', {class: `d-flex align-items-center badge badge-${this.$sectionClassColors[target]}`}, target)
           ]
       )
 
       this.$bvToast.toast(text, {
         title: vNodesTitle,
         toaster: 'b-toaster-bottom-right',
-        variant: this.$sectionColors[currentSection],
+        variant: this.$sectionClassColors[currentSection],
         solid: true,
         bodyClass: 'd-none',
         autoHideDelay: 2500,
@@ -189,22 +196,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.custom-scroll {
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 10%);
-    border-radius: 5px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 50%);
-    border-radius: 5px;
-  }
-}
-
 .custom-task-card {
   width: 100%;
   box-shadow: -3px 8px 15px -10px #000000;
@@ -240,10 +231,10 @@ export default {
     button {
       width: 50px;
       height: 50px;
-      border: outset;
-      border-color: rgba(255, 255, 255, 0.5);
+      border: inset;
+      border-color: rgba(255, 255, 255, 0.3);
       box-sizing: border-box;
-      box-shadow: 0 0 20px 0 #FFFFFF;
+      box-shadow: -4px 4px 10px 0px #000000, 4px -5px 12px 0px inset #000000;
       border-radius: 25px;
     }
   }

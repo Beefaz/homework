@@ -3,8 +3,8 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
-import Dashboard from "@/views/dashboard/Dashboard";
 import NavBar from "@/components/NavBar";
+import Dashboard from "@/components/Dashboard";
 
 const routes = [
   {

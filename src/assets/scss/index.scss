@@ -1,0 +1,7 @@
+@import "variables";
+
+@each $name, $val in $colors {
+  .app-background--#{$name} {
+    background: linear-gradient(30deg, #000000 -100%, $val 77%, #FFFFFF 100%);
+  }
+}

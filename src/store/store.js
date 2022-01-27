@@ -7,7 +7,7 @@ const getTaskByIndex = (state, task) => state.allTasks.findIndex(item => item.id
 
 export default new Vuex.Store({
   state: {
-    allTasks: []
+    allTasks: [],
   },
   mutations: {
     TASK_NEW: (state, task) => {
@@ -25,17 +25,19 @@ export default new Vuex.Store({
       state.allTasks[getTaskByIndex(state, task)] = {...task, status: 'done'};
     },
     TASK_RESTORE: (state, task) => {
-      state.allTasks[getTaskByIndex(state, task)] = {...task, status: state.allTasks[getTaskByIndex(state, task)].previousStatus};
+      state.allTasks[getTaskByIndex(state, task)] = {
+        ...task,
+        status: state.allTasks[getTaskByIndex(state, task)].previousStatus
+      };
     },
     TASK_SAVE_CURRENT: (state, task) => {
       state.allTasks[getTaskByIndex(state, task)] = {...task};
     },
 
-    // eslint-disable-next-line no-unused-vars
-    GET_COOKIE_DATA:(state) => {
+    GET_COOKIE_DATA: (state) => {
       if (localStorage.getItem('tasks-storage')) state.allTasks = JSON.parse(localStorage.getItem('tasks-storage')).allTasks;
     },
-    SET_COOKIE_DATA:(state) => {
+    SET_COOKIE_DATA: (state) => {
       if (localStorage.getItem('tasks-storage')) localStorage.removeItem('tasks-storage');
       localStorage.setItem('tasks-storage', JSON.stringify(state));
     }
