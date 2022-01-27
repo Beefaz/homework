@@ -1,24 +1,13 @@
-# homework
+# Scoding homework
 
-## Project setup
-```
-yarn install
-```
+### Initial project:
+code: https://github.com/Beefaz/homework/tree/v1
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+page: https://kind-saha-84d0e1.netlify.app/
 
-### Compiles and minifies for production
-```
-yarn build
-```
+### Version 2:
+code: https://github.com/Beefaz/homework/tree/v2
 
-### Lints and fixes files
-```
-yarn lint
-```
+page: https://zen-pare-4d9304.netlify.app/
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+complete visual redesign +code fixes
