@@ -48,7 +48,7 @@
           <b-button
               v-if="issue.status === 'open'"
               variant="primary"
-              @click="markAsDoneIssue(issue); "
+              @click="markAsDoneIssue(issue); makeToast('Moved to: ', issue.status, 'done')"
               v-b-tooltip.hover title="Mark as done"
           >
             <b-icon icon="check2"></b-icon>
@@ -182,7 +182,7 @@ export default {
 <style lang="scss" scoped>
 .custom-issue-card {
   width: 100%;
-  box-shadow: 0px 0px 3px 0px black;
+  box-shadow: 0 0 3px 0 #000000;
 
   .card-body {
     display: flex;
@@ -216,7 +216,7 @@ export default {
       border: inset;
       border-color: rgba(255,255,255,0.5);
       box-sizing: border-box;
-      box-shadow: 0px 0px 20px 0px white;
+      box-shadow: 0 0 20px 0 #FFFFFF;
       border-radius: 25px;
     }
   }
