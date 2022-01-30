@@ -10,15 +10,19 @@
         is-nav
     >
       <BNavbarNav>
-        <BNavItem
+        <template
             v-for="(item, index) in $router.options.routes"
-            :key="index"
-            :to="item.path"
-            :class="`d-flex justify-content-center bg-${$sectionClassColors[item.meta.statusView]} ${$route.path===item.path ? 'active': ''}`"
-            link-classes="font-weight-bold"
         >
-          {{ item.meta.label }}
-        </BNavItem>
+          <BNavItem
+              v-if="item.path.includes('/tasks')"
+              :key="index"
+              :to="item.path"
+              :class="`d-flex justify-content-center bg-${$sectionClassColors[item.meta.statusView]} ${$route.path===item.path ? 'active': ''}`"
+              link-classes="font-weight-bold"
+          >
+            {{ item.meta.label }}
+          </BNavItem>
+        </template>
       </BNavbarNav>
     </BCollapse>
   </BNavbar>
