@@ -3,12 +3,13 @@
     <!-- create card -->
     <BRow
         v-if="$route.meta.statusView === 'new'"
-        class="pb-3 no-gutters"
+        class="my-3 no-gutters"
     >
       <BCard class="custom-task-card">
         <BCardText
             ref="new-task-text"
-            @input="modelNewInput($event)"
+            key="new-card"
+            @input="modelNewInput($event.target.innerText)"
             contenteditable
         />
         <!-- create btn-->
@@ -24,26 +25,23 @@
         </BCardFooter>
       </BCard>
     </BRow>
-
     <!-- other cards-->
     <BRow
-        class="pb-3 no-gutters"
-        v-for="(task, index) in allTasks.filter(item => item.status === $route.meta.statusView)"
+        class="my-3 no-gutters"
+        v-for="(task, index) in filterTasksByStatus($route.meta.statusView)"
         :key="`${task.status}-${task.id}-${index}`"
     >
       <BCard
           v-if="task.status === $route.meta.statusView"
           class="custom-task-card"
       >
-
         <BCardText
             :ref="`input-text${task.id}`"
-            @input="saveCurrentTask(task)"
+            @input="saveCurrentTask(task, $event.target.innerText)"
             contenteditable
         >
           {{ task.text }}
         </BCardText>
-
         <BCardFooter>
           <!-- mark as done btn-->
           <BButton
@@ -90,7 +88,7 @@
 </template>
 
 <script>
-import {mapState, mapMutations} from "vuex";
+import {mapMutations, mapGetters} from "vuex";
 
 export default {
   name: 'Dashboard',
@@ -112,7 +110,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['allTasks']),
+    ...mapGetters(['filterTasksByStatus']),
   },
 
   methods: {
@@ -126,16 +124,19 @@ export default {
       'TASK_SAVE_CURRENT',
     ]),
 
-    modelNewInput(event) {
-      this.newTask.text = event.target.innerText;
+    modelNewInput(text) {
+      this.newTask.text = text;
+    },
+
+    resetNewTaskCard() {
+      this.newTask.text = this.$refs["new-task-text"].innerText = '';
     },
 
     addNewTask() {
       if (!this.newTask.text || this.newTask.text === '') return;
       this.TASK_NEW({...this.newTask});
+      this.resetNewTaskCard();
       this.makeToast('Created at: ', 'new', 'open');
-      this.newTask.text = '';
-      this.$refs["new-task-text"].innerText = '';
       this.$forceUpdate();
     },
 
@@ -157,8 +158,8 @@ export default {
       this.$forceUpdate();
     },
 
-    saveCurrentTask(task) {
-      task.text = this.$refs[`input-text${task.id}`][0].innerText;
+    saveCurrentTask(task, text) {
+      task = {...task, text: text};
       this.TASK_SAVE_CURRENT(task);
       this.$store.commit('SET_COOKIE_DATA');
     },

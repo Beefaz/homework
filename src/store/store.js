@@ -33,7 +33,6 @@ export default new Vuex.Store({
     TASK_SAVE_CURRENT: (state, task) => {
       state.allTasks[getTaskByIndex(state, task)] = {...task};
     },
-
     GET_COOKIE_DATA: (state) => {
       if (localStorage.getItem('tasks-storage')) state.allTasks = JSON.parse(localStorage.getItem('tasks-storage')).allTasks;
     },
@@ -42,10 +41,7 @@ export default new Vuex.Store({
       localStorage.setItem('tasks-storage', JSON.stringify(state));
     }
   },
-  actions: {},
-  modules: {},
   getters: {
-    getAllTasks: state => state.allTasks,
-    getCurrentTask: state => state.currentTask,
+    filterTasksByStatus: (state) => (status) => state.allTasks.filter(item => item.status === status),
   },
 })
