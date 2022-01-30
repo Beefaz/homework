@@ -20,7 +20,10 @@
               @click="addNewTask()"
               v-b-tooltip.hover title="Create new task"
           >
-            <BIcon icon="plus"/>
+            <BIcon
+                icon="plus"
+                scale="1.5"
+            />
           </BButton>
         </BCardFooter>
       </BCard>
@@ -50,7 +53,7 @@
               @click="markAsDoneTask(task)"
               v-b-tooltip.hover title="Mark as done"
           >
-            <b-icon icon="check2"/>
+            <BIcon icon="check2" scale="1.5"/>
           </BButton>
 
           <!-- mark as open btn-->
@@ -60,14 +63,14 @@
               @click="markAsOpenTask(task)"
               v-b-tooltip.hover title="Mark as open"
           >
-            <BIcon icon="check2"/>
+            <BIcon icon="check2" scale="1.5"/>
           </BButton>
 
-          <!-- delete btn-->
+          <!-- move to trash btn-->
           <BButton
               v-if="task.status === 'open' || task.status === 'done'"
               variant="danger"
-              @click="deleteTask(task)"
+              @click="moveTaskToTrash(task)"
               v-b-tooltip.hover title="Move to trash"
           >
             <BIcon icon="trash"/>
@@ -80,6 +83,19 @@
               v-b-tooltip.hover title="Restore"
           >
             <BIcon icon="arrow90deg-left"/>
+          </BButton>
+
+          <!-- destroy btn-->
+          <BButton
+              v-if="task.status === 'trashed'"
+              variant="danger"
+              @click="destroyTask(task)"
+              v-b-tooltip.hover title="Destroy task completely"
+          >
+            <BIcon
+                icon="x"
+                scale="1.7"
+            />
           </BButton>
         </BCardFooter>
       </BCard>
@@ -120,6 +136,7 @@ export default {
       'TASK_MARK_AS_OPEN',
       'TASK_MARK_AS_DONE',
       'TASK_RESTORE',
+      'TASK_DESTROY',
       'TASK_SET_CURRENT',
       'TASK_SAVE_CURRENT',
     ]),
@@ -135,9 +152,8 @@ export default {
     addNewTask() {
       if (!this.newTask.text || this.newTask.text === '') return;
       this.TASK_NEW({...this.newTask});
-      this.resetNewTaskCard();
       this.makeToast('Created at: ', 'new', 'open');
-      this.$forceUpdate();
+      this.resetNewTaskCard();
     },
 
     markAsOpenTask(task) {
@@ -152,7 +168,7 @@ export default {
       this.$forceUpdate();
     },
 
-    deleteTask(task) {
+    moveTaskToTrash(task) {
       this.TASK_DELETE(task);
       this.makeToast('Deleted to: ', task.status, 'trashed');
       this.$forceUpdate();
@@ -170,7 +186,13 @@ export default {
       this.$forceUpdate();
     },
 
-    makeToast(text = '', currentSection = 'default', target = 'default') {
+    destroyTask(task) {
+      this.TASK_DESTROY(task);
+      this.makeToast('Task is gone completely ☹');
+      this.$forceUpdate();
+    },
+
+    makeToast(text = '', currentSection = 'default', target = null) {
       if (!this.newTask.text && currentSection === 'new') return;
 
       const h = this.$createElement;
@@ -179,7 +201,13 @@ export default {
           {class: 'd-flex flex-grow-1 justify-content-center'},
           [
             h('strong', {class: 'mr-2'}, text),
-            h('span', {class: `d-flex align-items-center badge badge-${this.$sectionClassColors[target]}`}, target)
+            target !== null
+                ? h(
+                  'span',
+                  {class: `d-flex align-items-center badge badge-${this.$sectionClassColors[target]}`},
+                  target
+                )
+                : null,
           ]
       )
 
@@ -189,7 +217,7 @@ export default {
         variant: this.$sectionClassColors[currentSection],
         solid: true,
         bodyClass: 'd-none',
-        autoHideDelay: 2500,
+        autoHideDelay: 50000,
       })
     },
   },
@@ -237,6 +265,9 @@ export default {
       box-sizing: border-box;
       box-shadow: -4px 4px 10px 0px #000000, 4px -5px 12px 0px inset #000000;
       border-radius: 25px;
+      &:focus, :focus-visible, :focus-within {
+        outline: 2px solid #FFFFFF;
+      }
     }
   }
 }

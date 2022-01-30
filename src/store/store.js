@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex)
 
-const getTaskByIndex = (state, task) => state.allTasks.findIndex(item => item.id === task.id);
+const getTaskIndex = (state, task) => state.allTasks.findIndex(item => item.id === task.id);
 
 export default new Vuex.Store({
   state: {
@@ -16,22 +16,25 @@ export default new Vuex.Store({
       state.allTasks.unshift(task);
     },
     TASK_DELETE: (state, task) => {
-      state.allTasks[getTaskByIndex(state, task)] = {...task, status: 'trashed', previousStatus: task.status};
+      state.allTasks[getTaskIndex(state, task)] = {...task, status: 'trashed', previousStatus: task.status};
     },
     TASK_MARK_AS_OPEN: (state, task) => {
-      state.allTasks[getTaskByIndex(state, task)] = {...task, status: 'open'};
+      state.allTasks[getTaskIndex(state, task)] = {...task, status: 'open'};
     },
     TASK_MARK_AS_DONE: (state, task) => {
-      state.allTasks[getTaskByIndex(state, task)] = {...task, status: 'done'};
+      state.allTasks[getTaskIndex(state, task)] = {...task, status: 'done'};
     },
     TASK_RESTORE: (state, task) => {
-      state.allTasks[getTaskByIndex(state, task)] = {
+      state.allTasks[getTaskIndex(state, task)] = {
         ...task,
-        status: state.allTasks[getTaskByIndex(state, task)].previousStatus
+        status: state.allTasks[getTaskIndex(state, task)].previousStatus
       };
     },
+    TASK_DESTROY: (state, task) => {
+      state.allTasks.splice(getTaskIndex(state, task), 1)
+    },
     TASK_SAVE_CURRENT: (state, task) => {
-      state.allTasks[getTaskByIndex(state, task)] = {...task};
+      state.allTasks[getTaskIndex(state, task)] = {...task};
     },
     GET_COOKIE_DATA: (state) => {
       if (localStorage.getItem('tasks-storage')) state.allTasks = JSON.parse(localStorage.getItem('tasks-storage')).allTasks;
