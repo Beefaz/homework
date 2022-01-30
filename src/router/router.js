@@ -8,6 +8,10 @@ import Dashboard from "@/components/Dashboard";
 
 const routes = [
   {
+    path: '/',
+    redirect: '/tasks/new'
+  },
+  {
     path: '/tasks/new',
     components: {
       navigation: NavBar,
