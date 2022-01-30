@@ -9,6 +9,10 @@ import NavBar from "@/components/NavBar";
 const routes = [
   {
     path: '/',
+    redirect: '/issues/new',
+  },
+  {
+    path: '/issues/new',
     components: {
       navigation: NavBar,
       content: Dashboard,
