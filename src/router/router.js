@@ -8,7 +8,7 @@ import Dashboard from "@/components/Dashboard";
 
 const routes = [
   {
-    path: '/',
+    path: '/tasks/new',
     components: {
       navigation: NavBar,
       content: Dashboard,
