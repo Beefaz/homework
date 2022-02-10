@@ -203,9 +203,9 @@ export default {
             h('strong', {class: 'mr-2'}, text),
             target !== null
                 ? h(
-                  'span',
-                  {class: `d-flex align-items-center badge badge-${this.$sectionClassColors[target]}`},
-                  target
+                'span',
+                {class: `d-flex align-items-center badge badge-${this.$sectionClassColors[target]}`},
+                target
                 )
                 : null,
           ]
@@ -265,6 +265,7 @@ export default {
       box-sizing: border-box;
       box-shadow: -4px 4px 10px 0px #000000, 4px -5px 12px 0px inset #000000;
       border-radius: 25px;
+
       &:focus, :focus-visible, :focus-within {
         outline: 2px solid #FFFFFF;
       }
